@@ -6,24 +6,24 @@
                 <input type="hidden" name="uid" value="{{_session.userId}}" />
 
                 <div class="control-group {#if .errors.oldPassword}error{/}">
-                    <input type='password' name="old-password" placeholder="Old Password" value="{.oldPassword}"/>
+                    <input type='password' name="old-password" placeholder="Gammalt Lösenord" value="{.oldPassword}"/>
                     <span class="help-inline">{.errors.oldPassword}</span>
                 </div>
 
                 <div class="control-group {#if .errors.password}error{/}">
-                    <input type='password' name="password" placeholder="New Password" value="{.password}"/>
+                    <input type='password' name="password" placeholder="Nytt Lösenord" value="{.password}"/>
                     <span class="help-inline">{.errors.password}</span>
                 </div>
 
                 <div class="control-group {#if .errors.passwordConfirmation}error{/}">
-                    <input type='password' name="password-confirmation" placeholder="Confirm New Password" value="{.passwordConfirmation}"/>
+                    <input type='password' name="password-confirmation" placeholder="Bekräfta Lösenordet" value="{.passwordConfirmation}"/>
                     <span class="help-inline">{.errors.passwordConfirmation}</span>
                 </div>
 
                 {#if .canSubmit}
-                    <input type="submit" value="Submit" class="btn"/>
+                    <input type="submit" value="Ändra" class="btn"/>
                 {else}
-                    <input type="submit" value="Submit" class="btn disabled" disabled/>
+                    <input type="submit" value="Ändra" class="btn disabled" disabled/>
                 {/}
             </form>
         {/}

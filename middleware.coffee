@@ -186,7 +186,7 @@ setupPassport = (strategies) ->
       return done(err) if err # real error
       auth = $uname.get()[0]
       unless auth # user not found
-        return done null, false, message: "Unkown user #{username}"
+        return done null, false, message: "Användaren #{username} hittades inte"
 
       # We needed the whole user object first so we can get his salt to encrypt password comparison
       hashed = utils.encryptPassword(password, auth.local.salt)
@@ -195,7 +195,7 @@ setupPassport = (strategies) ->
       $unamePass.fetch (err) ->
         return done(err) if err # real error
         auth = $unamePass.get()?[0]
-        return done(null, false, message: "Invalid password.") unless auth
+        return done(null, false, message: "Felaktigt lösenord.") unless auth
         login auth, req, null, done
 
   _.each strategies, (obj, name) ->
@@ -248,7 +248,7 @@ setupStaticRoutes = (expressApp, strategies) ->
   #   which, in this example, will redirect the user to the home page.
   #
   #   curl -v -d "username=bob&password=secret" http://127.0.0.1:3000/login
-  loginOpts = _.defaults {failureFlash: 'Incorrect username or password.'}, opts.passport
+  loginOpts = _.defaults {failureFlash: 'Felaktigt användarnamn eller lösenord.'}, opts.passport
   expressApp.post "/login", passport.authenticate("local", loginOpts)
 
   # POST /login
@@ -276,12 +276,12 @@ setupStaticRoutes = (expressApp, strategies) ->
       return next(err) if err
 
       if $uname.get()?[0]
-        req.flash 'error', "That "+opts.passport.usernameField+" is already registered"
+        req.flash 'error', "Det användarnamn är redan registrerad"
         return res.redirect(opts.passport.failureRedirect)
 
       currUser = $currUser.get()
       if currUser?.local?[opts.passport.usernameField]
-        req.flash 'error', "You are already registered"
+        req.flash 'error', "Du är redan registrerad"
         return res.redirect(opts.passport.failureRedirect)
 
       # Legit, register
@@ -332,18 +332,18 @@ setupStaticRoutes = (expressApp, strategies) ->
     $email.fetch (err) ->
       return next(err)  if err
       auth = $email.get()[0]
-      return res.send(500, "Couldn't find a user registered for email " + email)  unless auth
+      return res.send(500, "Ingen användare med e-post " + email + " hittades")  unless auth
       req._isServer = true # our bypassing of session-based accessControl
       model.set "auths.#{auth.id}.local.salt", salt
       model.set "auths.#{auth.id}.local.hashed_password", hashed_password
       sendEmail
         from: "#{opts.site.name} <#{opts.site.email}>"
         to: email
-        subject: "Password Reset for #{opts.site.name}"
-        text: "Password for " + auth.local[opts.passport.usernameField] + " has been reset to " + newPassword + ". Log in at #{opts.site.domain}"
-        html: "Password for <strong>" + auth.local[opts.passport.usernameField]+ "</strong> has been reset to <strong>" + newPassword + "</strong>. Log in at #{opts.site.domain}"
+        subject: "Återställning av lösenord för #{opts.site.name}"
+        text: "Lösenord för " + auth.local[opts.passport.usernameField] + " har varit återställt till " + newPassword + ". Logga in på #{opts.site.domain}"
+        html: "Lösenord för <strong>" + auth.local[opts.passport.usernameField]+ "</strong> har varit återställt till <strong>" + newPassword + "</strong>. Logga in på #{opts.site.domain}"
 
-      res.send "New password sent to " + email
+      res.send "Nytt lösenord skickades till " + email
 
   expressApp.post "/password-change", (req, res, next) ->
     model = req.getModel()
@@ -356,7 +356,7 @@ setupStaticRoutes = (expressApp, strategies) ->
       salt = auth.local.salt
       hashed_old_password = utils.encryptPassword(req.body.oldPassword, salt)
       hashed_new_password = utils.encryptPassword(req.body.newPassword, salt)
-      return res.send(500, "Old password doesn't match")  if hashed_old_password isnt auth.local.hashed_password
+      return res.send(500, "Gamla lösenordet stämmer inte")  if hashed_old_password isnt auth.local.hashed_password
       $user.set "local.hashed_password", hashed_new_password
       res.send 200
 

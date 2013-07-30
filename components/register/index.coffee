@@ -18,7 +18,7 @@ exports.create = (model, dom) ->
             check(username).isAlphanumeric();
             model.set('errors.username', '');
         catch err
-            model.set('errors.username', err.message)
+            model.set('errors.username', 'Ogiltiga tecken')
 
     model.on 'change', 'email', (email) ->
         return unless email
@@ -26,7 +26,7 @@ exports.create = (model, dom) ->
             check(email).isEmail()
             model.set('errors.email', '')
         catch err
-            model.set('errors.email', err.message)
+            model.set('errors.email', 'Ogiltig e-post')
 
     model.on 'change', 'passwordConfirmation', (passwordConfirmation) ->
         return unless passwordConfirmation
@@ -34,7 +34,7 @@ exports.create = (model, dom) ->
             check(passwordConfirmation).equals(model.get('password'))
             model.set('errors.passwordConfirmation', '')
         catch err
-            model.set('errors.passwordConfirmation', err.message)
+            model.set('errors.passwordConfirmation', 'Lösenorden är inte lika')
 
     model.on 'change', 'password', (password) ->
         return unless password
@@ -42,7 +42,7 @@ exports.create = (model, dom) ->
             check(password).len(6)
             model.set('errors.password', '')
         catch err
-            model.set('errors.password', 'Password must be at least 6 characters')
+            model.set('errors.password', 'Lösenordet måste vara minst 6 tecken')
 
     model.on 'change', 'errors.*', (error) ->
         m = model.get()
@@ -58,7 +58,7 @@ exports.usernameBlur = () ->
     $q.fetch (err) ->
         try
             throw new Error(err) if (err)
-            throw new Error('Username already taken') if $q.get()[0]
+            throw new Error('Användarnamn redan taget') if $q.get()[0]
         catch err
             model.set('errors.username', err.message)
 
@@ -70,6 +70,6 @@ exports.emailBlur = () ->
     $q.fetch (err) ->
         try
             throw new Error(err) if (err)
-            throw new Error('Email already taken') if $q.get()[0]
+            throw new Error('e-post redan registrerad') if $q.get()[0]
         catch err
             model.set('errors.email', err.message)

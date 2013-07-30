@@ -6,14 +6,13 @@ utils = require('../../utils.coffee')
 exports.init = (model) ->
 
 exports.create = (model, dom) ->
-
     model.on 'change', 'password', (password) ->
         return unless password
         try
             check(password).len(6)
             model.set('errors.password', '')
         catch err
-            model.set('errors.password', 'Password must be at least 6 characters')
+            model.set('errors.password', 'Lösenordet måste vara minst 6 tecken')
 
     model.on 'change', 'passwordConfirmation', (passwordConfirmation) ->
         return unless passwordConfirmation
@@ -21,7 +20,7 @@ exports.create = (model, dom) ->
             check(passwordConfirmation).equals(model.get('password'))
             model.set('errors.passwordConfirmation', '')
         catch err
-            model.set('errors.passwordConfirmation', err.message)
+            model.set('errors.passwordConfirmation', 'Lösenorden är inte lika')
 
     model.on 'change', 'errors.*', (error) ->
         m = model.get()
@@ -40,6 +39,6 @@ exports.submitPasswordChange = (e, el) ->
             oldPassword: model.get('oldPassword')
             newPassword: model.get('password')
         success: (data, textStatus, jqXHR ) ->
-            alert("Password successfully changed")
+            alert("Lösenordet har ändrats")
         error: (jqXHR, textStatus, errorThrown ) ->
             model.set('errors.oldPassword', jqXHR.responseText)

@@ -23,7 +23,7 @@ exports.loginSubmit = (e, el) ->
     # TODO handle server-side login failure response message here, via model.set('errors.password',..)
 
 exports.showPasswordReset = () ->
-    document.getElementById('derby-auth-password-reset').style.display = ""
+    document.getElementById('derby-auth-password-reset').style.display = if document.getElementById('derby-auth-password-reset').style.display is "" then "none" else ""
 
 exports.submitPasswordReset = () ->
     # check username registered

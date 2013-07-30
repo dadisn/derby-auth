@@ -77,7 +77,7 @@ accessControl = (store) ->
     return next() unless shareRequest.docName? and shareRequest.agent.connectSession?.userId?
     return next() if shareRequest.collection isnt "auths"
     return next() if shareRequest.docName is shareRequest.agent.connectSession.userId
-    next new Error("Not allowed to fetch users who are not you.")
+    next new Error("Det är inte tillåtet att hämta användare som inte är du.")
     
   store.shareClient.use "subscribe", protectRead
   store.shareClient.use "fetch", protectRead
@@ -88,11 +88,11 @@ accessControl = (store) ->
   ###
   store.onChange "auths", (docId, opData, snapshotData, session, isServer, next) ->
     if docId is (session and session.userId) then next()
-    else if opData.del then next new Error("Not allowed to deleted users who are not you.")
+    else if opData.del then next new Error("Det är inte tillåtet att ta bort användare som inte är du.")
     else if opData.create
       if isServer then next()
-      else next new Error("Not allowed to create users.")
-    else next new Error("Not allowed to update users who are not you.")
+      else next new Error("Det är inte tillåtet att skapa användare.")
+    else next new Error("Det är inte tillåtet att uppdatera användare som inte är du.")
 
 ###
   {store} The Racer store. Needed for setting up accessControl
