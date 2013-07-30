@@ -350,7 +350,7 @@ setupStaticRoutes = (expressApp, strategies) ->
     uid = req.body.uid
     $user = model.at("auths." + uid)
     $user.fetch (err) ->
-      auth = $user.get()[0]
+      auth = $user.get()
       if err or !auth
         return res.send 500, err or "Couldn't find that user (this shouldn't be happening, contact Tyler: http://goo.gl/nrx99)"
       salt = auth.local.salt
