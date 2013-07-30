@@ -9,7 +9,6 @@ exports.init = (model) ->
     $groups = rootModel.query('groups', {})
     $groups.fetch (err) ->
         return next(err) if err
-        console.log $groups.get()
         model.set 'groups', $groups.get()
       
 exports.create = (model, dom) ->
