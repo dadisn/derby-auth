@@ -4,7 +4,14 @@ sanitize = validator.sanitize
 utils = require('../../utils.coffee')
 
 exports.init = (model) ->
-
+    model = @model
+    rootModel = model.parent().parent()
+    $groups = rootModel.query('groups', {})
+    $groups.fetch (err) ->
+        return next(err) if err
+        console.log $groups.get()
+        model.set 'groups', $groups.get()
+      
 exports.create = (model, dom) ->
     model.on 'change', 'username', (username) ->
         return unless username

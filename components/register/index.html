@@ -22,6 +22,14 @@
                 <span class="help-inline">{.errors.passwordConfirmation}</span>
             </div>
 
+            <div class="control-group">
+                <select name="group">
+                    {#each .groups as :group}
+                        <option value="{:group.id}">{:group.name}</option>
+                    {/}
+                </select>
+            </div>
+
             {#if .canSubmit}
                 <input type="submit" value="Register" class="btn"/>
             {else}
