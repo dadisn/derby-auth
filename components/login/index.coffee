@@ -15,7 +15,7 @@ exports.usernameBlur = ->
             if $q.get()[0]
               model.set('errors.username', '')
             else
-              throw new Error "Username not registered. Make sure you're using the same capitalization you used to register!"
+              throw new Error "Användarnamn inte registrerad. Kontrollera att du exakt samma stavning som du använde för att registrera!"
         catch err
             model.set('errors.username', err.message)
 
