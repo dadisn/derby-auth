@@ -30,29 +30,16 @@ login = (user, req, res, done) ->
   {res}
   {done}
 ###
-register = ($user, strategy, data, req, res, done) ->
-  cb = ->
-    if opts.passport.registerCallback
-      opts.passport.registerCallback req, res, $user.get(), (->login $user.get(), req, res, done)
-    else login($user.get(),req,res,done)
-
-  user = $user.get()
-
-  # User already registered, but not with this strategy - tie to their existing account
-  if user
-    $user.set "#{strategy}", data, ->
-      $user.set "timestamps.registered", +new Date, cb
-
-  # User not yet registered, create new user
-  else
-    model = req.getModel()
-    id = model.id()
-    newUser = {id}
-    newUser[strategy] = data
-    newUser.timestamps = {registered: +new Date}
-    model.set "auths.#{id}", newUser, ->
-      $user = model.at "auths.#{id}"
-      cb()
+register = (strategy, data, req, res, done) ->
+  model = req.getModel()
+  id = model.id()
+  newUser = {id}
+  newUser[strategy] = data
+  newUser.timestamps = {registered: +new Date}
+  model.set "auths.#{id}", newUser, ->
+    $user = model.at "auths.#{id}"
+    req.flash 'info', 'Användaren "#{newUser[strategy].username}" har varit lagt till!'
+    res.redirect(opts.passport.successRedirect)
 
 logout = (req, res) ->
   delete req.session.userId
@@ -108,12 +95,13 @@ module.exports = (strategies, options) ->
   # Setup default options
   defaults =
     passport:
-      failureRedirect:  "/"
-      successRedirect:  "/"
-      failureFlash:     true
-      registerCallback: null
+      failureRedirect:    "/"
+      successRedirect:    "/"
+      failureFlash:       true
+      registerCallback:   null
       passReqToCallback:  true
       usernameField:      'username'
+      adminGroup:         'admin'
     site:
       domain:           "http://localhost:3000"
       name:             "My Site"
@@ -272,16 +260,17 @@ setupStaticRoutes = (expressApp, strategies) ->
     authQuery['local.'+opts.passport.usernameField] = req.body[opts.passport.usernameField]
     $uname = model.query "auths", authQuery
     $currUser = model.at "auths." + req.session.userId
-    model.fetch $uname, $currUser, (err) ->
+    model.fetch $uname, $currUser, 'groups', (err) ->
       return next(err) if err
 
       if $uname.get()?[0]
         req.flash 'error', "Det användarnamn är redan registrerad"
         return res.redirect(opts.passport.failureRedirect)
 
-      currUser = $currUser.get()
-      if currUser?.local?[opts.passport.usernameField]
-        req.flash 'error', "Du är redan registrerad"
+      currUserGroup = $currUser.get 'local.group'
+      groupName = model.get 'groups.#{currUserGroup}.name'
+      if groupName is not opts.passport.adminGroup
+        req.flash 'error', "Endast användare i administratörsgruppen kan lägga till nya användare"
         return res.redirect(opts.passport.failureRedirect)
 
       # Legit, register
@@ -295,7 +284,7 @@ setupStaticRoutes = (expressApp, strategies) ->
 
       # Allows for login fields to be something other than username or email
       localAuth[opts.passport.usernameField] = req.body[opts.passport.usernameField]
-      register $currUser, 'local', localAuth, req, res, next
+      register 'local', localAuth, req, res, next
 
   _.each strategies, (strategy, name) ->
     params = strategy.params or {}
