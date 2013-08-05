@@ -260,18 +260,20 @@ setupStaticRoutes = (expressApp, strategies) ->
     authQuery['local.'+opts.passport.usernameField] = req.body[opts.passport.usernameField]
     $uname = model.query "auths", authQuery
     $currUser = model.at "auths." + req.session.userId
-    model.fetch $uname, $currUser, 'groups', (err) ->
+    $users = model.query "auths", {}
+    model.fetch $uname, $currUser, $users, 'groups', (err) ->
       return next(err) if err
 
       if $uname.get()?[0]
         req.flash 'error', "Det användarnamn är redan registrerad"
         return res.redirect(opts.passport.failureRedirect)
 
-      currUserGroup = $currUser.get 'local.group'
-      groupName = model.get 'groups.#{currUserGroup}.name'
-      if groupName is not opts.passport.adminGroup
-        req.flash 'error', "Endast användare i administratörsgruppen kan lägga till nya användare"
-        return res.redirect(opts.passport.failureRedirect)
+      if $users.get()?[0]
+        currUserGroup = $currUser.get 'local.group'
+        groupName = model.get 'groups.#{currUserGroup}.name'
+        if groupName is not opts.passport.adminGroup
+          req.flash 'error', "Endast användare i administratörsgruppen kan lägga till nya användare"
+          return res.redirect(opts.passport.failureRedirect)
 
       # Legit, register
       salt = utils.makeSalt()
