@@ -7,17 +7,17 @@
 
                 <div class="control-group {#if .errors.oldPassword}error{/}">
                     <input type='password' name="old-password" placeholder="Gammalt Lösenord" value="{.oldPassword}"/>
-                    <span class="help-inline">{.errors.oldPassword}</span>
+                    <span class="help-block">{.errors.oldPassword}</span>
                 </div>
 
                 <div class="control-group {#if .errors.password}error{/}">
                     <input type='password' name="password" placeholder="Nytt Lösenord" value="{.password}"/>
-                    <span class="help-inline">{.errors.password}</span>
+                    <span class="help-block">{.errors.password}</span>
                 </div>
 
                 <div class="control-group {#if .errors.passwordConfirmation}error{/}">
                     <input type='password' name="password-confirmation" placeholder="Bekräfta Lösenordet" value="{.passwordConfirmation}"/>
-                    <span class="help-inline">{.errors.passwordConfirmation}</span>
+                    <span class="help-block">{.errors.passwordConfirmation}</span>
                 </div>
 
                 {#if .canSubmit}

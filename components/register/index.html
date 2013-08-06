@@ -4,31 +4,32 @@
 
             <div class="control-group {#if .errors.username}error{/}">
                 <input type='text' name="username" placeholder="Användarnamn" x-bind="blur:usernameBlur" value="{.username}"/>
-                <span class="help-inline">{.errors.username}</span>
+                <span class="help-block">{.errors.username}</span>
             </div>
 
             <div class="control-group {#if .errors.email}error{/}">
                 <input type='text' name="email" placeholder="e-post" x-bind="blur:emailBlur" value="{.email}"/>
-                <span class="help-inline">{.errors.email}</span>
+                <span class="help-block">{.errors.email}</span>
             </div>
 
             <div class="control-group {#if .errors.password}error{/}">
                 <input type='password' name="password" placeholder="Lösenord" value="{.password}"/>
-                <span class="help-inline">{.errors.password}</span>
+                <span class="help-block">{.errors.password}</span>
             </div>
 
             <div class="control-group {#if .errors.passwordConfirmation}error{/}">
                 <input type='password' name="password-confirmation" placeholder="Bekräfta Lösenordet" value="{.passwordConfirmation}"/>
-                <span class="help-inline">{.errors.passwordConfirmation}</span>
+                <span class="help-block">{.errors.passwordConfirmation}</span>
             </div>
 
-            <div class="control-group">
+            <div class="control-group {#if .errors.group}error{/}">
                 <select name="group">
-                        <option value="" selected disabled>Användargrupp</option>
+                    <option value="" selected disabled>Användargrupp</option>
                     {#each .groups as :group}
-                        <option value="{:group.id}">{:group.name}</option>
+                        <option value="{:group.id}" selected="{equal(:self.group, :group.id)}">{:group.name}</option>
                     {/}
                 </select>
+                <span class="help-block">{.errors.group}</span>
             </div>
 
             {#if .canSubmit}

@@ -44,10 +44,18 @@ exports.create = (model, dom) ->
         catch err
             model.set('errors.password', 'Lösenordet måste vara minst 6 tecken')
 
+    model.on 'change', 'group', (group) ->
+        return unless group
+        try
+            check(group).notEmpty()
+            model.set('errors.group', '');
+        catch err
+            model.set('errors.group', 'Du måste välja användargrupp')
+
     model.on 'change', 'errors.*', (error) ->
         m = model.get()
-        canSubmit = !m.errors.username && !m.errors.email && !m.errors.passwordConfirmation && !m.errors.password &&
-            !!m.username && !!m.email && !!m.passwordConfirmation && !!m.password
+        canSubmit = !m.errors.username && !m.errors.email && !m.errors.passwordConfirmation && !m.errors.password && !m.errors.group &&
+            !!m.username && !!m.email && !!m.passwordConfirmation && !!m.password && !!m.group
         model.set('canSubmit', canSubmit)
 
 exports.usernameBlur = () ->
